@@ -1,0 +1,103 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A8A8A8"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="jamessnee.com.madassignment1.DetailViewActivity">
+
+
+
+    <TextView
+        android:id="@+id/titleDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/posterView"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/posterView"
+        android:layout_toRightOf="@+id/posterView"
+        android:gravity="center"
+        android:text="@string/titlePlaceholder"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ImageView
+        android:id="@+id/posterView"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/yearView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/posterView"
+        android:text="@string/yearPlaceholder"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+
+    <ScrollView
+        android:id="@+id/descScrollView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/detailRatingBar"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="100dp"
+        >
+
+        <TextView
+            android:id="@+id/movieDescText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="100dp"
+            android:text="@string/movieDescPlaceholder"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_below="@+id/yearView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="37dp" />
+
+    </ScrollView>
+
+    <RatingBar
+        android:id="@+id/detailRatingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:rating="0"
+        android:layout_below="@+id/titleDisplay"
+        android:layout_alignLeft="@+id/titleDisplay"
+        android:layout_alignStart="@+id/titleDisplay"
+        />
+
+    <Button
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:text="@string/schedulePartyButton"
+        android:textSize="14dp"
+        android:id="@+id/partyButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:textSize="14dp"
+        android:text="Share"
+        android:id="@+id/shareButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

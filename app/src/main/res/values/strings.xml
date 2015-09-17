@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MAD Assignment 2</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_detail_view">Movie Details</string>
+    <string name="titlePlaceholder">title shown here</string>
+    <string name="yearPlaceholder">year shown here</string>
+    <string name="schedulePartyButton">Schedule a party</string>
+    <string name="movieDescPlaceholder">moviedesc shown here</string>
+    <string name="shortPlotPlaceholder">short plot shown here</string>
+    <string name="ratingPlaceholder">Rating: /5 Stars</string>
+    <string name="partyDate">Party Date:</string>
+    <string name="partyVenue">Party Venue:</string>
+    <string name="partyLocation">Party Location:</string>
+</resources>

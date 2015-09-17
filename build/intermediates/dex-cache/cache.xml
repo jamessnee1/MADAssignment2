@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/libs/internal_impl-22.2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
+        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.1-e2b2c55ea55a37655457dcb275f33f32de7f73be.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4486e953d1f35f8ccab098b1dd67146366d5f731">
+        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/classes-12dc37199bc5ab53fd15a0f900e2b6b524e6a624.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f8efd0096475e0daf054267b61544e10dc776503">
+        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/classes-0fbd96337f714502afa3b72b870c22189a5cd92a.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/AndroidStudioProjects/MADAssignment1_2/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/libs/internal_impl-22.2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
+        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment1_2/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.1-6fb6e2d7fc5b3967b2805f0e9b527b149ef58fe7.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/AndroidStudioProjects/MADAssignment1_2/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f8efd0096475e0daf054267b61544e10dc776503">
+        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment1_2/app/build/intermediates/pre-dexed/debug/classes-5759b0a1b25458338521bb788be4a19c31597b02.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.1/support-annotations-22.2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="61a0ff5c29295ec56d7e0bd3d25d95dbf71b4b2b">
+        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment1_2/app/build/intermediates/pre-dexed/debug/support-annotations-22.2.1-9c58e0ab78adbd6145191139037ae4645ae01542.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/AndroidStudioProjects/MADAssignment1_2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4486e953d1f35f8ccab098b1dd67146366d5f731">
+        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment1_2/app/build/intermediates/pre-dexed/debug/classes-e061e8670b0c1ebb15c938080ebdba3bfb75611f.jar" />
+    </item>
+
+</items>
