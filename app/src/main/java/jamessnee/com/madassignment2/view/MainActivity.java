@@ -3,6 +3,9 @@ package jamessnee.com.madassignment2.view;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -47,6 +50,7 @@ public class MainActivity extends ActionBarActivity {
     private String searchedMovie;
     private ImageView posterImage;
     private String imageUrl;
+    private Bitmap retrievedPoster;
 
 
 
@@ -102,6 +106,7 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
 
         search = (SearchView) findViewById(R.id.searchView);
+        posterImage = (ImageView) findViewById(R.id.poster);
 
         //populate movie data in the list view
         populateListView();
@@ -116,7 +121,7 @@ public class MainActivity extends ActionBarActivity {
         //get text from textbox
         searchedMovie = search.getQuery().toString();
 
-        //Call AsyncTask to perform network operation
+        //Call AsyncTask to perform network operation, once for short plot and once for long plot
         new HttpAsyncTask().execute("http://www.omdbapi.com/?t="+ searchedMovie +"&y=&plot=short&r=json");
 
     }
@@ -268,12 +273,39 @@ public class MainActivity extends ActionBarActivity {
         return result;
     }
 
+    //get a Drawable from a URL
+    private static Bitmap drawableFromURL(String url) throws IOException {
+
+        Bitmap bmp;
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.connect();
+        InputStream input = connection.getInputStream();
+
+        bmp = BitmapFactory.decodeStream(input);
+        return bmp;
+
+    }
+
 
     //Http Async task to run Get operation in separate thread
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... urls) {
+
+            //get movie poster from server
+            try {
+
+                retrievedPoster = drawableFromURL(imageUrl);
+
+            }
+            catch (IOException e){
+
+                //throw error message
+
+            }
+
             return GET(urls[0]);
         }
 
@@ -281,41 +313,16 @@ public class MainActivity extends ActionBarActivity {
             Toast.makeText(getBaseContext(), "Search result received!", Toast.LENGTH_LONG).show();
             //get movie object from JSON data
             Movie retrievedMovie = parseJSON(result);
+
+            if (retrievedPoster != null){
+                posterImage.setImageBitmap(retrievedPoster);
+            }
+
             //set movie to current listadapter
             adapter.add(retrievedMovie);
             adapter.notifyDataSetChanged();
             //set movie to database
-            //searchResult.setText(formattedResult);
 
-            try {
-                //download and set poster image
-                //Bitmap bmp = BitmapFactory.decodeFile(String.valueOf(new URL(imageUrl).openStream()));
-                //posterImage.setImageBitmap(bmp);
-
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-    //set URL to bitmap for display
-    public Bitmap getBitmapFromURL(String url){
-
-        try {
-            URL imgUrl = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection) imgUrl.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream in = connection.getInputStream();
-            Bitmap poster = BitmapFactory.decodeStream(in);
-            return poster;
-
-        }
-        catch(IOException e){
-            e.printStackTrace();
-            return null;
 
         }
     }
@@ -337,9 +344,10 @@ public class MainActivity extends ActionBarActivity {
             title = json.optString("Title").toString();
             year = json.optInt("Year");
             plot = json.optString("Plot").toString();
+            id = json.optString("imdbID").toString();
             imageUrl = json.optString("Poster").toString();
 
-            retrieved = new Movie(title, year, plot, null, 0, null, 0, null);
+            retrieved = new Movie(title, year, plot, null, 0, id, 0, null);
             return retrieved;
 
 
