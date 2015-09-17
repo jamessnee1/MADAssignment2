@@ -79,13 +79,19 @@ public class MainActivity extends ActionBarActivity {
 
     //check if connected to internet
     public boolean isConnected(){
+
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(this.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         if(networkInfo != null && networkInfo.isConnected()){
+            Toast.makeText(this, "Connected to internet, will get movie data from OMDB API",
+                    Toast.LENGTH_LONG).show();
             return true;
         }
         else {
+
+            Toast.makeText(this, "Not connected to internet, will get movie data from database",
+                    Toast.LENGTH_LONG).show();
             return false;
         }
     }
