@@ -1,6 +1,7 @@
 package jamessnee.com.madassignment2.view;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -29,14 +30,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import jamessnee.com.madassignment2.R;
 import jamessnee.com.madassignment2.model.AppData;
+import jamessnee.com.madassignment2.model.DatabaseHandler;
 import jamessnee.com.madassignment2.model.Movie;
 
 
@@ -45,6 +53,7 @@ public class MainActivity extends ActionBarActivity {
     //movie vars
     private TextView rating;
     private ArrayAdapter<Movie> adapter;
+    private ArrayList<Movie> movies;
     private ListView list;
     private SearchView search;
     private String searchedMovie;
@@ -59,6 +68,91 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        populateMovieData();
+
+
+    }
+
+    private void populateMovieData(){
+
+        Movie movie1 = new Movie("Star Wars Episode V: The Empire Strikes Back", 1980,"The second installment in the" +
+                " Star Wars series.",
+                "After the Rebel base on the icy planet Hoth is taken over by the empire, Han, Leia, " +
+                        "Chewbacca, and C-3PO flee across the galaxy from the Empire. Luke travels to the forgotten " +
+                        "planet of Dagobah to receive training from the Jedi master Yoda, while Vader endlessly " +
+                        "pursues him.",R.drawable.esb,"tt0080684", 0, null);
+
+
+
+        Movie movie2 = new Movie("The Terminator", 1984,"The first installment in the" +
+                " Terminator series.",
+                "A cyborg is sent from the future on a deadly mission. He has to kill Sarah Connor, a young woman " +
+                        "whose life will have a great significance in years to come. Sarah has only one protector - " +
+                        "Kyle Reese - also sent from the future. The Terminator uses his exceptional intelligence and " +
+                        "strength to find Sarah, but is there any way to stop the seemingly indestructible " +
+                        "cyborg?", R.drawable.terminator,"tt0088247", 0, null);
+
+        Movie movie3 = new Movie("Frozen", 2013,"Disney/Pixar animated film.",
+                "Anna, a fearless optimist, sets off on an epic journey - teaming up with rugged mountain " +
+                        "man Kristoff and his loyal reindeer Sven - to find her sister Elsa, whose icy powers have " +
+                        "trapped the kingdom of Arendelle in eternal winter. Encountering Everest-like conditions, " +
+                        "mystical trolls and a hilarious snowman named Olaf, Anna and Kristoff battle the " +
+                        "elements in a race to save the kingdom. From the outside Anna's sister, " +
+                        "Elsa looks poised, regal and reserved, but in reality, she lives in fear as she " +
+                        "wrestles with a mighty secret-she was born with the power to create ice and snow. " +
+                        "It's a beautiful ability, but also extremely dangerous. Haunted by the moment her " +
+                        "magic nearly killed her younger sister Anna, Elsa has isolated herself, spending every " +
+                        "waking minute trying to suppress her growing powers. Her mounting emotions trigger " +
+                        "the magic, accidentally setting off an eternal winter that she can't stop. She fears " +
+                        "she's becoming a monster and that no one, not even her sister, " +
+                        "can help her.",R.drawable.frozen,"tt2294629", 0, null);
+
+        Movie movie4 = new Movie("The Lion King", 1994,"Disney 2D Animated film.",
+                "A young lion Prince is cast out of his pride by his cruel uncle, who claims he killed his " +
+                        "father. While the uncle rules with an iron fist, the prince grows up beyond the savannah, " +
+                        "living by a philosophy: No worries for the rest of your days. But when his past " +
+                        "comes to haunt him, the young Prince must decide his fate: will he remain an outcast, " +
+                        "or face his demons and become what he needs to be?",R.drawable.lionking,"tt0110357", 0, null);
+
+        Movie movie5 = new Movie("The Shawshank Redemption", 1994,"Frank Darabont's prison film.",
+                "Andy Dufresne is a young and successful banker whose life changes drastically when he is " +
+                        "convicted and sentenced to life imprisonment for the murder of his wife and her " +
+                        "lover. Set in the 1940s, the film shows how Andy, with the help of his friend Red, " +
+                        "the prison entrepreneur, turns out to be a most unconventional " +
+                        "prisoner.",R.drawable.shawshank,"tt0111161", 0, null);
+
+        Movie movie6 = new Movie("The Dark Knight", 2008,"Heath Ledger's last film appearance.",
+                "Batman raises the stakes in his war on crime. With the help of Lieutenant Jim Gordon and " +
+                        "District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal " +
+                        "organizations that plague the city streets. The partnership proves to be effective, " +
+                        "but they soon find themselves prey to a reign of chaos unleashed by a rising " +
+                        "criminal mastermind known to the terrified citizens of Gotham " +
+                        "as The Joker.",R.drawable.darkknight,"tt0468569", 0, null);
+
+        Movie movie7 = new Movie("Pulp Fiction", 1994,"Quentin Tarantino's breakout hit.",
+                "Jules Winnfield and Vincent Vega are two hitmen who are out to retrieve a suitcase " +
+                        "stolen from their employer, mob boss Marsellus Wallace. Wallace has also asked " +
+                        "Vincent to take his wife Mia out a few days later when Wallace himself will be " +
+                        "out of town. Butch Coolidge is an aging boxer who is paid by Wallace to lose " +
+                        "his next fight. The lives of these seemingly unrelated people are woven " +
+                        "together comprising of a series of funny, bizarre and " +
+                        "uncalled-for incidents.",R.drawable.pulpfiction,"tt0110912", 0, null);
+
+        Movie movie8 = new Movie("Bad Behaviour", 2010,"The programmer worked on this movie.",
+                "Emma and Peterson encounter their fierce predator Voyte Parker, a cop " +
+                        "confronts his son's murderer, and a man finds his wife is cheating on him. " +
+                        "Intersecting story lines; murderers, coppers, teachers " +
+                        "and teenagers.",R.drawable.badbehaviour,"tt1621418", 0, null);
+
+
+        DatabaseHandler.getInstance(this).insertMovieData(movie1);
+        DatabaseHandler.getInstance(this).insertMovieData(movie2);
+        DatabaseHandler.getInstance(this).insertMovieData(movie3);
+        DatabaseHandler.getInstance(this).insertMovieData(movie4);
+        DatabaseHandler.getInstance(this).insertMovieData(movie5);
+        DatabaseHandler.getInstance(this).insertMovieData(movie6);
+        DatabaseHandler.getInstance(this).insertMovieData(movie7);
+        DatabaseHandler.getInstance(this).insertMovieData(movie8);
 
     }
 
@@ -72,6 +166,25 @@ public class MainActivity extends ActionBarActivity {
         else {
 
         }
+
+        Cursor data = DatabaseHandler.getInstance(this).retrieveAllData();
+
+        if (data.getCount() == 0){
+
+        }
+
+        //Go through retrieved movie details and populate the list
+        movies = new ArrayList<Movie>();
+
+        while(data.moveToNext()){
+
+            Movie temp = new Movie(data.getString(1), data.getInt(2), data.getString(3), data.getString(4),
+                    data.getInt(5), data.getString(0), data.getInt(6), null);
+
+            movies.add(temp);
+
+        }
+
 
         //setup initial adapter with Movie list
         adapter = new MyListAdapter();
@@ -129,10 +242,9 @@ public class MainActivity extends ActionBarActivity {
     //inner class for MyListAdapter
     private class MyListAdapter extends ArrayAdapter<Movie> {
 
-        //get movies from singleton
-        //get movies from GET request
+
         public MyListAdapter() {
-            super(MainActivity.this, R.layout.list_item, AppData.getInstance().getMovies());
+            super(MainActivity.this, R.layout.list_item, movies);
         }
 
         @Override
@@ -149,7 +261,7 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v) {
 
-                    Movie clickedMovie = AppData.getInstance().getMovie(position);
+                    Movie clickedMovie = movies.get(position);
 
                     //put intent here to go to next activity
                     Intent detailIntent = new Intent(MainActivity.this, DetailViewActivity.class);
@@ -168,7 +280,7 @@ public class MainActivity extends ActionBarActivity {
             });
 
             //find movie to work with
-            final Movie currentMovie = AppData.getInstance().getMovie(position);
+            final Movie currentMovie = movies.get(position);
 
             //fill the view
             //poster
@@ -202,7 +314,7 @@ public class MainActivity extends ActionBarActivity {
 
                     ratingBar.setRating((int) rating);
                     //add to model
-                    AppData.getInstance().getMovie(position).setRating((int) rating);
+                    movies.get(position).setRating((int) rating);
                     currentMovie.setRating((int) rating);
 
                     //refresh list to reflect new rating
@@ -211,7 +323,7 @@ public class MainActivity extends ActionBarActivity {
 
 
                     Toast.makeText(getApplicationContext(), "The rating was changed to " +
-                            AppData.getInstance().getMovie(position).getRating(), Toast.LENGTH_SHORT).show();
+                            movies.get(position).getRating(), Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -247,6 +359,7 @@ public class MainActivity extends ActionBarActivity {
             }
             else {
                 //Throw error
+                return null;
             }
 
 
@@ -293,24 +406,10 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String... urls) {
-
-            //get movie poster from server
-            try {
-
-                retrievedPoster = drawableFromURL(imageUrl);
-
-            }
-            catch (IOException e){
-
-                //throw error message
-
-            }
-
             return GET(urls[0]);
         }
 
         protected void onPostExecute(String result){
-            Toast.makeText(getBaseContext(), "Search result received!", Toast.LENGTH_LONG).show();
             //get movie object from JSON data
             Movie retrievedMovie = parseJSON(result);
 
@@ -318,14 +417,21 @@ public class MainActivity extends ActionBarActivity {
                 posterImage.setImageBitmap(retrievedPoster);
             }
 
-            //set movie to current listadapter
-            adapter.add(retrievedMovie);
-            adapter.notifyDataSetChanged();
-            //set movie to database
-
+            if (retrievedMovie != null){
+                //set movie to current listadapter
+                adapter.add(retrievedMovie);
+                adapter.notifyDataSetChanged();
+                //set movie to database
+                DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(retrievedMovie);
+                copyDatabase();
+            }
+            else {
+                Toast.makeText(getBaseContext(), "Movie not found!", Toast.LENGTH_LONG).show();
+            }
 
         }
     }
+
 
     //Parse JSON into a movie object
     public Movie parseJSON(String input){
@@ -335,16 +441,11 @@ public class MainActivity extends ActionBarActivity {
         try {
             //Create JSON object from input string
             JSONObject json = new JSONObject(input);
-            String title = "";
-            int year = 0;
-            String plot = "";
-            String id = "";
 
-
-            title = json.optString("Title").toString();
-            year = json.optInt("Year");
-            plot = json.optString("Plot").toString();
-            id = json.optString("imdbID").toString();
+            String title = json.optString("Title").toString();
+            int year = json.optInt("Year");
+            String plot = json.optString("Plot").toString();
+            String id = json.optString("imdbID").toString();
             imageUrl = json.optString("Poster").toString();
 
             retrieved = new Movie(title, year, plot, null, 0, id, 0, null);
@@ -361,6 +462,69 @@ public class MainActivity extends ActionBarActivity {
 
 
     }
+
+    //This method is to get around having to enable root access to device, copy database file to
+    //documents folder on the device to ensure expected data appears in database. For testing only.
+    public void copyDatabase() {
+
+        //get source path and dest path
+        String databasePath = getApplicationContext().getDatabasePath(DatabaseHandler.DATABASE_NAME).getPath();
+        File db = new File(databasePath);
+
+        //input and output streams
+        InputStream in = null;
+        OutputStream out = null;
+
+        //check if our file exists
+        if (db.exists()){
+
+            try {
+
+                File dir = new File("/mnt/sdcard/DB_DEBUG");
+
+                if(!dir.exists()){
+                    dir.mkdir();
+                }
+
+                in = new FileInputStream(databasePath);
+                out = new FileOutputStream(dir.getAbsolutePath() + "/" + DatabaseHandler.DATABASE_NAME);
+
+
+                byte[] buffer = new byte[1024];
+                int length;
+
+                while((length = in.read(buffer)) > 0){
+                    out.write(buffer, 0, length);
+                }
+
+                out.flush();
+            }
+            catch(Exception e){
+
+            }finally {
+
+                try{
+                    if (in != null){
+                        in.close();
+                        in = null;
+                    }
+                    if(out != null){
+                        out.close();
+                        out = null;
+                    }
+                }
+                catch(Exception e){
+
+                }
+
+            }
+
+        }
+
+        Toast.makeText(getApplicationContext(), "Copied file " + DatabaseHandler.DATABASE_NAME + " from " +
+                databasePath + " to mnt/sdcard/DB_DEBUG", Toast.LENGTH_LONG).show();
+
+    } //end copyDatabase
 
 
 }
