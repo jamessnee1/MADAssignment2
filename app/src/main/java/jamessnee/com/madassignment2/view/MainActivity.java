@@ -261,8 +261,9 @@ public class MainActivity extends ActionBarActivity {
         if(isConnected()){
             //Call AsyncTask to perform network operation, once for short plot and once for long plot
             Toast.makeText(this, "Searching OMDB...", Toast.LENGTH_LONG).show();
-            new HttpAsyncTask().execute("http://www.omdbapi.com/?s="+ searchedMovie +"&y=&plot=short&r=json");
-            //new HttpAsyncTask().execute("http://www.omdbapi.com/?t="+ searchedMovie +"&y=&plot=short&r=json");
+            HttpAsyncTask movieSearch = new HttpAsyncTask();
+            movieSearch.execute("http://www.omdbapi.com/?s=" + searchedMovie + "&y=&plot=short&r=json");
+
 
 
         }
@@ -493,6 +494,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         protected void onPostExecute(String result){
+
             //get movie object from JSON data
             ArrayList<Movie> retrievedMovie = parseJSON(result);
 
