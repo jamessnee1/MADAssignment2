@@ -12,6 +12,7 @@ import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,6 +46,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jamessnee.com.madassignment2.R;
@@ -58,7 +60,7 @@ public class MainActivity extends ActionBarActivity {
     //movie vars
     private TextView rating;
     private ArrayAdapter<Movie> adapter;
-    private ArrayList<Movie> movies;
+    //private ArrayList<Movie> movies;
     private ListView list;
     private SearchView search;
     private String searchedMovie;
@@ -74,7 +76,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         // For testing only: Load dummy data
-         populateMovieData();
+        //populateMovieData();
         //populate movie data in the list view
         populateListView();
         //adapter.notifyDataSetChanged();
@@ -191,31 +193,23 @@ public class MainActivity extends ActionBarActivity {
 
     private void populateListView(){
 
-        //if connected to internet, populate with data from get request
-        if (isConnected()){
-
-        }
-        //if not connected, populate with data from database store
-        else {
-
-        }
 
         Cursor data = DatabaseHandler.getInstance(this).retrieveAllData();
 
-        if (data.getCount() == 0){
+        //Go through retrieved movie details and populate the list. Only update
+        //list if cache is empty. If cache is not empty then do nothing
+        if (AppData.getInstance().getMovies() == null) {
+            AppData.getInstance().setMovies(new ArrayList<Movie>());
 
+            while(data.moveToNext()){
 
-        }
+                Movie temp = new Movie(data.getString(1), data.getInt(2), data.getString(3), data.getString(4),
+                        data.getInt(5), data.getString(0), data.getInt(6), null);
 
-        //Go through retrieved movie details and populate the list
-        movies = new ArrayList<Movie>();
+                AppData.getInstance().getMovies().add(temp);
 
-        while(data.moveToNext()){
+            }
 
-            Movie temp = new Movie(data.getString(1), data.getInt(2), data.getString(3), data.getString(4),
-                    data.getInt(5), data.getString(0), data.getInt(6), null);
-
-            movies.add(temp);
 
         }
 
@@ -275,7 +269,18 @@ public class MainActivity extends ActionBarActivity {
         else {
 
             Toast.makeText(this, "Searching database...", Toast.LENGTH_LONG).show();
-            //search in database instead
+            //search in database instead. Ensure to look through cached movies in movies arraylist
+            //before we wipe it
+            ArrayList<Movie> tempMovies = new ArrayList<Movie>();
+
+            for(Movie movie : AppData.getInstance().getMovies()){
+                if(movie.getTitle().toLowerCase().contains(searchedMovie.toLowerCase())){
+
+                    tempMovies.add(movie);
+
+                }
+            }
+
             Cursor data = DatabaseHandler.getInstance(this).retrieveAllData();
 
             if (data.getCount() == 0){
@@ -283,7 +288,9 @@ public class MainActivity extends ActionBarActivity {
             }
 
             //Go through retrieved movie details and populate the list
-            movies = new ArrayList<Movie>();
+            AppData.getInstance().setMovies(new ArrayList<Movie>());
+
+            AppData.getInstance().getMovies().addAll(tempMovies);
 
             while(data.moveToNext()){
 
@@ -293,7 +300,7 @@ public class MainActivity extends ActionBarActivity {
                     Movie temp = new Movie(data.getString(1), data.getInt(2), data.getString(3), data.getString(4),
                             data.getInt(5), data.getString(0), data.getInt(6), null);
 
-                    movies.add(temp);
+                    AppData.getInstance().getMovies().add(temp);
 
                 }
 
@@ -316,7 +323,7 @@ public class MainActivity extends ActionBarActivity {
 
 
         public MyListAdapter() {
-            super(MainActivity.this, R.layout.list_item, movies);
+            super(MainActivity.this, R.layout.list_item, AppData.getInstance().getMovies());
         }
 
         @Override
@@ -333,7 +340,7 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v) {
 
-                    Movie clickedMovie = movies.get(position);
+                    Movie clickedMovie = AppData.getInstance().getMovies().get(position);
 
                     //put intent here to go to next activity
                     Intent detailIntent = new Intent(MainActivity.this, DetailViewActivity.class);
@@ -348,11 +355,15 @@ public class MainActivity extends ActionBarActivity {
                     detailIntent.putExtra("position", position);
                     startActivity(detailIntent);
 
+                    //add clicked movie to database
+                    DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(clickedMovie);
+                    copyDatabase();
+
                 }
             });
 
             //find movie to work with
-            final Movie currentMovie = movies.get(position);
+            final Movie currentMovie = AppData.getInstance().getMovies().get(position);
 
             //fill the view
             //poster
@@ -386,7 +397,7 @@ public class MainActivity extends ActionBarActivity {
 
                     ratingBar.setRating((int) rating);
                     //add to model
-                    movies.get(position).setRating((int) rating);
+                    AppData.getInstance().getMovies().get(position).setRating((int) rating);
                     currentMovie.setRating((int) rating);
 
                     //refresh list to reflect new rating
@@ -395,7 +406,7 @@ public class MainActivity extends ActionBarActivity {
 
 
                     Toast.makeText(getApplicationContext(), "The rating was changed to " +
-                            movies.get(position).getRating(), Toast.LENGTH_SHORT).show();
+                            AppData.getInstance().getMovies().get(position).getRating(), Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -490,11 +501,12 @@ public class MainActivity extends ActionBarActivity {
                 //add movies to current listadapter
                 for(int i = 0; i < retrievedMovie.size(); i++){
                     adapter.add(retrievedMovie.get(i));
-                    //set movie to database
-                    DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(retrievedMovie.get(i));
+                    //set movie to database - for testing only as we only want to add to database if user
+                    //goes to detail screen
+                    //DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(retrievedMovie.get(i));
                 }
                 adapter.notifyDataSetChanged();
-                copyDatabase();
+
             }
             else {
                 createErrorDialog("Error", "Movie not found!");
@@ -629,7 +641,7 @@ public class MainActivity extends ActionBarActivity {
 
                 DatabaseHandler.getInstance(getApplicationContext()).deleteAllData();
                 //setup adapter again
-                movies = new ArrayList<Movie>();
+                AppData.getInstance().setMovies(new ArrayList<Movie>());
                 adapter = new MyListAdapter();
                 list = (ListView) findViewById(R.id.listViewMain);
                 list.setAdapter(adapter);
