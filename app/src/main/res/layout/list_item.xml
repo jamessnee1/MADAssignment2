@@ -6,7 +6,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/poster"
-        android:src="@drawable/esb"
+        android:src="@drawable/notavailablejpg"
         android:maxHeight="80dp"
         android:maxWidth="80dp"
         android:adjustViewBounds="true"

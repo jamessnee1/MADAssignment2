@@ -1,5 +1,7 @@
 package jamessnee.com.madassignment2.view;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -12,6 +14,8 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -26,6 +30,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,9 +73,37 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        populateMovieData();
+        // For testing only: Load dummy data
+         populateMovieData();
+        //populate movie data in the list view
+        populateListView();
+        //adapter.notifyDataSetChanged();
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+
+            createDialog("WARNING:", "You are about to clear all saved movies from the cache! Continue?");
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void populateMovieData(){
@@ -171,6 +204,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (data.getCount() == 0){
 
+
         }
 
         //Go through retrieved movie details and populate the list
@@ -201,14 +235,9 @@ public class MainActivity extends ActionBarActivity {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         if(networkInfo != null && networkInfo.isConnected()){
-            Toast.makeText(this, "Connected to internet, will get movie data from OMDB API",
-                    Toast.LENGTH_LONG).show();
             return true;
         }
         else {
-
-            Toast.makeText(this, "Not connected to internet, will get movie data from database",
-                    Toast.LENGTH_LONG).show();
             return false;
         }
     }
@@ -234,8 +263,51 @@ public class MainActivity extends ActionBarActivity {
         //get text from textbox
         searchedMovie = search.getQuery().toString();
 
-        //Call AsyncTask to perform network operation, once for short plot and once for long plot
-        new HttpAsyncTask().execute("http://www.omdbapi.com/?t="+ searchedMovie +"&y=&plot=short&r=json");
+        //check if connected to the network
+        if(isConnected()){
+            //Call AsyncTask to perform network operation, once for short plot and once for long plot
+            Toast.makeText(this, "Searching OMDB...", Toast.LENGTH_LONG).show();
+            new HttpAsyncTask().execute("http://www.omdbapi.com/?s="+ searchedMovie +"&y=&plot=short&r=json");
+            //new HttpAsyncTask().execute("http://www.omdbapi.com/?t="+ searchedMovie +"&y=&plot=short&r=json");
+
+
+        }
+        else {
+
+            Toast.makeText(this, "Searching database...", Toast.LENGTH_LONG).show();
+            //search in database instead
+            Cursor data = DatabaseHandler.getInstance(this).retrieveAllData();
+
+            if (data.getCount() == 0){
+                createErrorDialog("Error", searchedMovie + " not found in database!");
+            }
+
+            //Go through retrieved movie details and populate the list
+            movies = new ArrayList<Movie>();
+
+            while(data.moveToNext()){
+
+                //if the movie in the database contains the search query, add to array for display
+                if (data.getString(1).toLowerCase().contains(searchedMovie.toLowerCase())){
+
+                    Movie temp = new Movie(data.getString(1), data.getInt(2), data.getString(3), data.getString(4),
+                            data.getInt(5), data.getString(0), data.getInt(6), null);
+
+                    movies.add(temp);
+
+                }
+
+
+            }
+
+
+            //setup initial adapter with Movie list
+            adapter = new MyListAdapter();
+            list = (ListView) findViewById(R.id.listViewMain);
+            list.setAdapter(adapter);
+
+        }
+
 
     }
 
@@ -411,22 +483,21 @@ public class MainActivity extends ActionBarActivity {
 
         protected void onPostExecute(String result){
             //get movie object from JSON data
-            Movie retrievedMovie = parseJSON(result);
-
-            if (retrievedPoster != null){
-                posterImage.setImageBitmap(retrievedPoster);
-            }
+            ArrayList<Movie> retrievedMovie = parseJSON(result);
 
             if (retrievedMovie != null){
-                //set movie to current listadapter
-                adapter.add(retrievedMovie);
+
+                //add movies to current listadapter
+                for(int i = 0; i < retrievedMovie.size(); i++){
+                    adapter.add(retrievedMovie.get(i));
+                    //set movie to database
+                    DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(retrievedMovie.get(i));
+                }
                 adapter.notifyDataSetChanged();
-                //set movie to database
-                DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(retrievedMovie);
                 copyDatabase();
             }
             else {
-                Toast.makeText(getBaseContext(), "Movie not found!", Toast.LENGTH_LONG).show();
+                createErrorDialog("Error", "Movie not found!");
             }
 
         }
@@ -434,33 +505,50 @@ public class MainActivity extends ActionBarActivity {
 
 
     //Parse JSON into a movie object
-    public Movie parseJSON(String input){
+    public ArrayList<Movie> parseJSON(String input){
 
-        Movie retrieved;
+        ArrayList<Movie> retrieved = new ArrayList<Movie>();
 
         try {
             //Create JSON object from input string
             JSONObject json = new JSONObject(input);
+            //get searches array
+            JSONArray searches = json.optJSONArray("Search");
 
-            String title = json.optString("Title").toString();
-            int year = json.optInt("Year");
-            String plot = json.optString("Plot").toString();
-            String id = json.optString("imdbID").toString();
-            imageUrl = json.optString("Poster").toString();
+            if(searches != null){
 
-            retrieved = new Movie(title, year, plot, null, 0, id, 0, null);
-            return retrieved;
+                for(int i = 0; i < searches.length(); i++){
+                    //put each movie into a JSONObject
+                    JSONObject movie = searches.getJSONObject(i);
+
+                    String title = movie.optString("Title").toString();
+                    int year = movie.optInt("Year");
+                    String plot = movie.optString("Plot").toString();
+                    String id = movie.optString("imdbID").toString();
+                    imageUrl = movie.optString("Poster").toString();
+
+                    //add to new movie object
+                    Movie retrievedMovie = new Movie(title, year, plot, null, 0, id, 0, null);
+
+                    //add movie to retrieved arraylist
+                    retrieved.add(retrievedMovie);
 
 
+                }
+
+                return retrieved;
+
+            }
 
         }
         catch(JSONException e){
-            e.printStackTrace();
+
+            createErrorDialog("Error", e.getMessage().toString());
             return null;
         }
 
 
-
+        return null;
     }
 
     //This method is to get around having to enable root access to device, copy database file to
@@ -525,6 +613,67 @@ public class MainActivity extends ActionBarActivity {
                 databasePath + " to mnt/sdcard/DB_DEBUG", Toast.LENGTH_LONG).show();
 
     } //end copyDatabase
+
+
+    //create dialog box
+    public void createDialog(String title, String message){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                DatabaseHandler.getInstance(getApplicationContext()).deleteAllData();
+                //setup adapter again
+                movies = new ArrayList<Movie>();
+                adapter = new MyListAdapter();
+                list = (ListView) findViewById(R.id.listViewMain);
+                list.setAdapter(adapter);
+                Toast.makeText(getApplicationContext(), "All movies deleted!", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.show();
+
+
+    }
+
+    //create error dialog box
+    public void createErrorDialog(String title, String message){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.show();
+
+
+    }
 
 
 }

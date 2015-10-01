@@ -99,4 +99,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return retrieved;
     }
 
+    public Cursor retrieveMovieData(String query){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor retrieved = db.rawQuery("select * from " + TABLE_NAME + " where title LIKE '" + query + "'", null);
+        return retrieved;
+    }
+
 }
