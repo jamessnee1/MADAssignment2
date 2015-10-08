@@ -67,6 +67,7 @@ public class MainActivity extends ActionBarActivity {
     private ImageView posterImage;
     private String imageUrl;
     private Bitmap retrievedPoster;
+    private Movie movieForIntent;
 
 
 
@@ -265,7 +266,6 @@ public class MainActivity extends ActionBarActivity {
             movieSearch.execute("http://www.omdbapi.com/?s=" + searchedMovie + "&y=&plot=short&r=json");
 
 
-
         }
         else {
 
@@ -342,6 +342,10 @@ public class MainActivity extends ActionBarActivity {
                 public void onClick(View v) {
 
                     Movie clickedMovie = AppData.getInstance().getMovies().get(position);
+
+                    //get detailed movie information for the detail page
+                    HttpAsyncTask singleMovie = new HttpAsyncTask();
+                    singleMovie.execute("http://www.omdbapi.com/?t=" + clickedMovie.getTitle() + "&y=&plot=full&r=json");
 
                     //put intent here to go to next activity
                     Intent detailIntent = new Intent(MainActivity.this, DetailViewActivity.class);
