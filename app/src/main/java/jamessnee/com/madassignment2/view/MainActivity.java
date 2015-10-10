@@ -27,6 +27,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -64,10 +66,11 @@ public class MainActivity extends ActionBarActivity {
     private ListView list;
     private SearchView search;
     private String searchedMovie;
-    private ImageView posterImage;
-    private String imageUrl;
     private Bitmap retrievedPoster;
     private Movie movieForIntent;
+    private String imageUrl;
+    private Bitmap posterImage;
+    private ImageView poster;
 
 
 
@@ -75,6 +78,9 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //setup Firebase
+        Firebase.setAndroidContext(this);
 
         // For testing only: Load dummy data
         //populateMovieData();
@@ -243,7 +249,6 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
 
         search = (SearchView) findViewById(R.id.searchView);
-        posterImage = (ImageView) findViewById(R.id.poster);
 
         //populate movie data in the list view
         populateListView();
@@ -343,10 +348,6 @@ public class MainActivity extends ActionBarActivity {
 
                     Movie clickedMovie = AppData.getInstance().getMovies().get(position);
 
-                    //get detailed movie information for the detail page
-                    HttpAsyncTask singleMovie = new HttpAsyncTask();
-                    singleMovie.execute("http://www.omdbapi.com/?t=" + clickedMovie.getTitle() + "&y=&plot=full&r=json");
-
                     //put intent here to go to next activity
                     Intent detailIntent = new Intent(MainActivity.this, DetailViewActivity.class);
                     //extra to pass in movie variables
@@ -372,8 +373,10 @@ public class MainActivity extends ActionBarActivity {
 
             //fill the view
             //poster
-            ImageView poster = (ImageView)itemView.findViewById(R.id.poster);
-            poster.setImageResource(currentMovie.getPoster());
+            poster = (ImageView)itemView.findViewById(R.id.poster);
+            poster.setImageBitmap(posterImage);
+
+            //poster.setImageResource(currentMovie.getPoster());
 
             //title
             TextView title = (TextView)itemView.findViewById(R.id.item_title);
@@ -474,20 +477,6 @@ public class MainActivity extends ActionBarActivity {
         return result;
     }
 
-    //get a Drawable from a URL
-    private static Bitmap drawableFromURL(String url) throws IOException {
-
-        Bitmap bmp;
-
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.connect();
-        InputStream input = connection.getInputStream();
-
-        bmp = BitmapFactory.decodeStream(input);
-        return bmp;
-
-    }
-
 
     //Http Async task to run Get operation in separate thread
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
@@ -506,10 +495,12 @@ public class MainActivity extends ActionBarActivity {
 
                 //add movies to current listadapter
                 for(int i = 0; i < retrievedMovie.size(); i++){
+
                     adapter.add(retrievedMovie.get(i));
                     //set movie to database - for testing only as we only want to add to database if user
                     //goes to detail screen
                     //DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(retrievedMovie.get(i));
+
                 }
                 adapter.notifyDataSetChanged();
 
@@ -518,7 +509,42 @@ public class MainActivity extends ActionBarActivity {
                 createErrorDialog("Error", "Movie not found!");
             }
 
+
         }
+    }
+
+    //Load image class
+    private class LoadImage extends AsyncTask<String, String, Bitmap>{
+
+        @Override
+        protected Bitmap doInBackground(String... args) {
+
+            Bitmap bitmap;
+
+            try{
+                bitmap = BitmapFactory.decodeStream((InputStream)new URL(args[0]).getContent());
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                return null;
+            }
+
+            return bitmap;
+
+        }
+
+        protected void onPostExecute(Bitmap image){
+
+
+            if (image != null){
+                poster.setImageBitmap(image);
+            }
+            else {
+                poster.setImageResource(R.drawable.notavailablejpg);
+            }
+
+        }
+
     }
 
 
@@ -543,7 +569,10 @@ public class MainActivity extends ActionBarActivity {
                     int year = movie.optInt("Year");
                     String plot = movie.optString("Plot").toString();
                     String id = movie.optString("imdbID").toString();
-                    imageUrl = movie.optString("Poster").toString();
+                    String imageUrl = movie.optString("Poster").toString();
+
+                    new LoadImage().execute(imageUrl);
+
 
                     //add to new movie object
                     Movie retrievedMovie = new Movie(title, year, plot, null, 0, id, 0, null);

@@ -5,6 +5,13 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -25,12 +32,29 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 
 import jamessnee.com.madassignment2.R;
 import jamessnee.com.madassignment2.model.AppData;
+import jamessnee.com.madassignment2.model.DatabaseHandler;
+import jamessnee.com.madassignment2.model.Movie;
 import jamessnee.com.madassignment2.model.Party;
 
 public class DetailViewActivity extends ActionBarActivity {
@@ -43,6 +67,10 @@ public class DetailViewActivity extends ActionBarActivity {
     private int posterValue;
     private int ratingValue;
     private int position;
+    private String imageUrl;
+    private Movie retrievedMovie;
+    private Bitmap posterFromURL;
+    private ImageView displayPoster;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +89,32 @@ public class DetailViewActivity extends ActionBarActivity {
         movieIDValue = intent.getStringExtra("movieID");
         position = intent.getIntExtra("position", position);
 
-
-        //set values to display
-        TextView displayText = (TextView)findViewById(R.id.titleDisplay);
-        TextView yearView = (TextView)findViewById(R.id.yearView);
-        TextView descView = (TextView)findViewById(R.id.movieDescText);
-        ImageView displayPoster = (ImageView)findViewById(R.id.posterView);
         RatingBar rating = (RatingBar)findViewById(R.id.detailRatingBar);
         rating.setStepSize(1);
-        displayText.setText(titleValue);
-        yearView.setText(String.valueOf(yearValue));
-        descView.setText(descValue);
-        displayPoster.setImageResource(posterValue);
-        rating.setRating((int) ratingValue);
+        //set rating regardless of whether we are connected or not
+        rating.setRating(ratingValue);
+
+        if(isConnected()){
+            //do another OMDB search with the movieID instead
+            HttpAsyncTask movieSearch = new HttpAsyncTask();
+            movieSearch.execute("http://www.omdbapi.com/?i=" + movieIDValue + "&plot=full&r=json");
+
+        }
+        else {
+            //get passed in values instead
+            TextView displayText = (TextView)findViewById(R.id.titleDisplay);
+            TextView yearView = (TextView)findViewById(R.id.yearView);
+            TextView descView = (TextView)findViewById(R.id.movieDescText);
+            ImageView displayPoster = (ImageView)findViewById(R.id.posterView);
+            displayText.setText(titleValue);
+            yearView.setText(String.valueOf(yearValue));
+            descView.setText(descValue);
+            displayPoster.setImageResource(R.drawable.notavailablejpg);
+
+        }
+
+
+
 
         //Get button from UI
         Button schedulePartyButton = (Button)findViewById(R.id.partyButton);
@@ -256,6 +297,7 @@ public class DetailViewActivity extends ActionBarActivity {
 
                 //save data here
                 //create new party and add data to it
+                //send party to Firebase from here
                 String time = partyTime.getText().toString();
                 GregorianCalendar partyDate = new GregorianCalendar(date.getYear(), date.getMonth(), date.getDayOfMonth());
                 String venue = partyVenue.getText().toString();
@@ -264,6 +306,44 @@ public class DetailViewActivity extends ActionBarActivity {
 
                 //set party to corresponding movie
                 AppData.getInstance().getMovie(position).setParty(party);
+
+                //firebase stuff here
+
+                //send latlngs of where party is to google map intent
+                String[] convertedLatLng = location.split(",");
+                double convertedLat = Double.parseDouble(convertedLatLng[0]);
+                double convertedLong = Double.parseDouble(convertedLatLng[1]);
+
+                //convert date to string
+                StringBuilder sb = new StringBuilder();
+                sb.append(date.getDayOfMonth());
+                sb.append("/");
+                sb.append(date.getMonth());
+                sb.append("/");
+                sb.append(date.getYear());
+                String dateOutput = sb.toString();
+
+                Firebase reference = new Firebase("https://boiling-fire-450.firebaseIO.com/");
+                reference.child("movieTitle").setValue(titleValue);
+                reference.child("movieRating").setValue(ratingValue);
+                reference.child("partyDate").setValue(dateOutput);
+                reference.child("partyTime").setValue(time);
+                reference.child("partyVenue").setValue(venue);
+                reference.child("partyLocation").setValue(location);
+                reference.child("partyInvitees").setValue(selectedEmails);
+
+
+                //intent stuff
+                //put intent here to go to next activity
+                Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
+                //extra to pass in movie variables
+                mapIntent.putExtra("address", venue);
+                mapIntent.putExtra("latitude", convertedLat);
+                mapIntent.putExtra("longitude", convertedLong);
+                mapIntent.putExtra("date", dateOutput);
+                mapIntent.putExtra("time", time);
+                startActivity(mapIntent);
+
 
             }
         });
@@ -318,6 +398,194 @@ public class DetailViewActivity extends ActionBarActivity {
 
         cur.close();
         return emails;
+    }
+
+    //get method
+    public static String GET(String url){
+        InputStream inputStream = null;
+        String result = "";
+
+        try {
+            //Create Http Client
+            HttpClient httpClient = new DefaultHttpClient();
+
+            //Make get request with url
+            HttpResponse response = httpClient.execute(new HttpGet(url));
+
+            //receive response
+            inputStream = response.getEntity().getContent();
+
+            //Convert inputstream to string
+            if (inputStream != null){
+                result = convertInputstreamToString(inputStream);
+            }
+            else {
+                //Throw error
+                return null;
+            }
+
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    //Convert input stream to string
+    private static String convertInputstreamToString(InputStream inputStream) throws IOException {
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+
+        while((line = bufferedReader.readLine()) != null){
+
+            result += line;
+        }
+
+        inputStream.close();
+        return result;
+    }
+
+    //Http Async task to run Get operation in separate thread
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+            return GET(urls[0]);
+        }
+
+        protected void onPostExecute(String result){
+
+            //get movie object from JSON data
+            retrievedMovie = parseJSON(result);
+
+            if (retrievedMovie != null){
+
+                //set all movie info to Detail view
+                //set values to display
+                TextView displayText = (TextView)findViewById(R.id.titleDisplay);
+                TextView yearView = (TextView)findViewById(R.id.yearView);
+                TextView descView = (TextView)findViewById(R.id.movieDescText);
+                displayPoster = (ImageView)findViewById(R.id.posterView);
+                displayText.setText(retrievedMovie.getTitle());
+                yearView.setText(String.valueOf(retrievedMovie.getYear()));
+                descView.setText(retrievedMovie.getFull_plot());
+
+                //get poster from URL
+                new LoadImage().execute(imageUrl);
+
+            }
+            else {
+                createErrorDialog("Error", "Movie not found!");
+            }
+
+
+        }
+    }
+
+    //Load image class
+    private class LoadImage extends AsyncTask<String, String, Bitmap>{
+
+        @Override
+        protected Bitmap doInBackground(String... args) {
+
+            Bitmap bitmap;
+
+            try{
+                bitmap = BitmapFactory.decodeStream((InputStream)new URL(args[0]).getContent());
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                return null;
+            }
+
+            return bitmap;
+
+        }
+
+        protected void onPostExecute(Bitmap image){
+
+            if (image != null){
+                posterFromURL = image;
+                displayPoster.setImageBitmap(image);
+            }
+            else {
+                displayPoster.setImageResource(R.drawable.notavailablejpg);
+            }
+        }
+    }
+
+
+    //Parse JSON into a movie object
+    public Movie parseJSON(String input){
+
+        try {
+            //Create JSON object from input string
+            JSONObject json = new JSONObject(input);
+
+
+            if(json != null){
+
+                    String title = json.optString("Title").toString();
+                    int year = json.optInt("Year");
+                    String plot = json.optString("Plot").toString();
+                    String id = json.optString("imdbID").toString();
+                    imageUrl = json.optString("Poster").toString();
+
+                    //add to new movie object
+                    Movie retrievedMovie = new Movie(title, year, null, plot, 0, id, 0, null);
+
+                return retrievedMovie;
+
+            }
+
+        }
+        catch(JSONException e){
+
+            createErrorDialog("Error", e.getMessage().toString());
+            return null;
+        }
+
+
+        return null;
+    }
+
+    //create error dialog box
+    public void createErrorDialog(String title, String message){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.show();
+
+
+    }
+
+    //check if connected to internet
+    public boolean isConnected(){
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if(networkInfo != null && networkInfo.isConnected()){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 }

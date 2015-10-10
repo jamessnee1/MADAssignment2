@@ -13,4 +13,6 @@
     <string name="partyDate">Party Date:</string>
     <string name="partyVenue">Party Venue:</string>
     <string name="partyLocation">Party Location:</string>
+    <string name="title_activity_party_map">Party Map</string>
+    <string name="title_activity_full_size_poster">FullSizePoster</string>
 </resources>

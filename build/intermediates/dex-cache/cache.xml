@@ -2,46 +2,53 @@
 <items version="2" >
 
     <item
-        jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.firebase/tubesock/0.0.12/6ec0bbd3e161a73ed672284b587fd32309a86d7a/tubesock-0.0.12.jar"
+        jar="/Users/jamessnee/Desktop/MADAssignment2/app/build/intermediates/exploded-aar/com.android.support/design/22.2.1/jars/classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="6ec0bbd3e161a73ed672284b587fd32309a86d7a">
-        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/tubesock-0.0.12-6ccdc1fb0e52c7547ca94fa43ba2465916076c48.jar" />
-    </item>
-    <item
-        jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.2.2/285cb9c666f0f0f3dd8a1be04e1f457eb7b15113/jackson-annotations-2.2.2.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="285cb9c666f0f0f3dd8a1be04e1f457eb7b15113">
-        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/jackson-annotations-2.2.2-f139d306a51cea77f1e1738748a581e5e8fde747.jar" />
-    </item>
-    <item
-        jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.2.2/3c8f6018eaa72d43b261181e801e6f8676c16ef6/jackson-databind-2.2.2.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="3c8f6018eaa72d43b261181e801e6f8676c16ef6">
-        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/jackson-databind-2.2.2-69f06908ca0b5164be2b42250eedb103ac645b41.jar" />
+        sha1="1821601ddbec5ff125653097812823388700af74">
+        <dex dex="/Users/jamessnee/Desktop/MADAssignment2/app/build/intermediates/pre-dexed/debug/classes-de83465f0c8d0a2169b52f356f00e633d3e1a820.jar" />
     </item>
     <item
         jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.firebase/firebase-client-jvm/2.4.0/558e074f136fee609b8758480ecd00e286595137/firebase-client-jvm-2.4.0.jar"
         jumboMode="false"
         revision="22.0.1"
         sha1="558e074f136fee609b8758480ecd00e286595137">
-        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/firebase-client-jvm-2.4.0-f1575d2961c6fff497b1d79841889573c9b59972.jar" />
+        <dex dex="/Users/jamessnee/Desktop/MADAssignment2/app/build/intermediates/pre-dexed/debug/firebase-client-jvm-2.4.0-f1575d2961c6fff497b1d79841889573c9b59972.jar" />
     </item>
     <item
-        jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.2.2/d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b/jackson-core-2.2.2.jar"
+        jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.2.2/3c8f6018eaa72d43b261181e801e6f8676c16ef6/jackson-databind-2.2.2.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b">
-        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/jackson-core-2.2.2-6fcb04f25778ddce16f7c8276305ec42d69a79a2.jar" />
+        sha1="3c8f6018eaa72d43b261181e801e6f8676c16ef6">
+        <dex dex="/Users/jamessnee/Desktop/MADAssignment2/app/build/intermediates/pre-dexed/debug/jackson-databind-2.2.2-69f06908ca0b5164be2b42250eedb103ac645b41.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.firebase/tubesock/0.0.12/6ec0bbd3e161a73ed672284b587fd32309a86d7a/tubesock-0.0.12.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="6ec0bbd3e161a73ed672284b587fd32309a86d7a">
+        <dex dex="/Users/jamessnee/Desktop/MADAssignment2/app/build/intermediates/pre-dexed/debug/tubesock-0.0.12-6ccdc1fb0e52c7547ca94fa43ba2465916076c48.jar" />
     </item>
     <item
         jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.firebase/firebase-client-android/2.4.0/f00bc767918ad9c89e5c13e25706d033a58e13c2/firebase-client-android-2.4.0.jar"
         jumboMode="false"
         revision="22.0.1"
         sha1="f00bc767918ad9c89e5c13e25706d033a58e13c2">
-        <dex dex="/Users/jamessnee/AndroidStudioProjects/MADAssignment2/app/build/intermediates/pre-dexed/debug/firebase-client-android-2.4.0-214ff75119a13eda37ab2cbf78eb9760b42191c9.jar" />
+        <dex dex="/Users/jamessnee/Desktop/MADAssignment2/app/build/intermediates/pre-dexed/debug/firebase-client-android-2.4.0-214ff75119a13eda37ab2cbf78eb9760b42191c9.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.2.2/285cb9c666f0f0f3dd8a1be04e1f457eb7b15113/jackson-annotations-2.2.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="285cb9c666f0f0f3dd8a1be04e1f457eb7b15113">
+        <dex dex="/Users/jamessnee/Desktop/MADAssignment2/app/build/intermediates/pre-dexed/debug/jackson-annotations-2.2.2-f139d306a51cea77f1e1738748a581e5e8fde747.jar" />
+    </item>
+    <item
+        jar="/Users/jamessnee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.2.2/d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b/jackson-core-2.2.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b">
+        <dex dex="/Users/jamessnee/Desktop/MADAssignment2/app/build/intermediates/pre-dexed/debug/jackson-core-2.2.2-6fcb04f25778ddce16f7c8276305ec42d69a79a2.jar" />
     </item>
 
 </items>
