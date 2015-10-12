@@ -337,6 +337,9 @@ public class DetailViewActivity extends ActionBarActivity {
                 //put intent here to go to next activity
                 Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
                 //extra to pass in movie variables
+                Bundle extras = new Bundle();
+                extras.putSerializable("invitees", selectedEmails);
+                mapIntent.putExtra("extras", extras);
                 mapIntent.putExtra("address", venue);
                 mapIntent.putExtra("latitude", convertedLat);
                 mapIntent.putExtra("longitude", convertedLong);

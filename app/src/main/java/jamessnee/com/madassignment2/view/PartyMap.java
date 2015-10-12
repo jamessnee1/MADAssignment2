@@ -1,12 +1,18 @@
 package jamessnee.com.madassignment2.view;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jamessnee.com.madassignment2.R;
@@ -36,6 +43,7 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
     private LocationManager locationManager = null;
     private Location myLocation;
     private MarkerOptions startPointMarker, endPointMarker;
+    private ArrayList<String> invitees;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,7 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
 
@@ -62,6 +71,11 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
 
         Intent intent = getIntent();
+
+        //get invitees
+        Bundle extra = getIntent().getBundleExtra("extras");
+        invitees = (ArrayList<String>) extra.getSerializable("invitees");
+
         address = intent.getStringExtra("address");
         date = intent.getStringExtra("date");
         time = intent.getStringExtra("time");
@@ -103,6 +117,40 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
         LatLng partyLocation = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(partyLocation).title("Movie party"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(partyLocation));
+    }
+
+    //pull up a list of members
+    public void membersButtonPressed(View view) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle("Party Members");
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        //create listview to display chosen email addresses under spinner
+        final ListView emailList = new ListView(this);
+        final ArrayAdapter<String> emailsArrayAdapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_list_item_1, android.R.id.text1, invitees);
+        emailList.setAdapter(emailsArrayAdapter);
+
+
+        layout.addView(emailList);
+        builder.setView(layout);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.show();
+
+
     }
 
     //Location Listener

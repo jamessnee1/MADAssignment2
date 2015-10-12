@@ -9,7 +9,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="group107.wifiapp.CreateHotspotActivity"
+        tools:context="jamessnee.com.madassignment2.PartyMap"
         android:layout_alignParentBottom="true" />
 
 
@@ -21,7 +21,8 @@
         android:text="Party Members"
         android:id="@+id/membersButton"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="membersButtonPressed"/>
 
 
     <TextView

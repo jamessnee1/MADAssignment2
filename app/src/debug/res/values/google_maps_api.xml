@@ -12,10 +12,13 @@
     Alternatively, follow the directions here:
     https://developers.google.com/maps/documentation/android/start#get-key
 
+    <!- James iMac google maps API key: AIzaSyCDfbnJ3beHondKXdJsi3XpjYR4qwX3QYQ -!>
+    <!- James Macbook google maps API key: AIzaSyD9gnNkW8E2o76KsFOkdGx_hBJPFmvPeFY -!>
+
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
     -->
     <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
-        AIzaSyCDfbnJ3beHondKXdJsi3XpjYR4qwX3QYQ
+        AIzaSyD9gnNkW8E2o76KsFOkdGx_hBJPFmvPeFY
     </string>
 </resources>

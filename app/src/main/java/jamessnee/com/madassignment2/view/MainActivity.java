@@ -569,7 +569,7 @@ public class MainActivity extends ActionBarActivity {
                     int year = movie.optInt("Year");
                     String plot = movie.optString("Plot").toString();
                     String id = movie.optString("imdbID").toString();
-                    String imageUrl = movie.optString("Poster").toString();
+                    imageUrl = movie.optString("Poster").toString();
 
                     new LoadImage().execute(imageUrl);
 
