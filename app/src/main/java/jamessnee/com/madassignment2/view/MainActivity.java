@@ -71,6 +71,7 @@ public class MainActivity extends ActionBarActivity {
     private String imageUrl;
     private Bitmap posterImage;
     private ImageView poster;
+    private boolean networkStatus;
 
 
 

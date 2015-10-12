@@ -24,6 +24,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String COLUMN7 = "RATING";
 
 
+
     //getter
     public static synchronized DatabaseHandler getInstance(Context context){
 
