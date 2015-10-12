@@ -82,6 +82,13 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
         latitude = intent.getDoubleExtra("latitude", 0);
         longitude = intent.getDoubleExtra("longitude", 0);
 
+        //check lat and long is not null
+        if (latitude == 0 || longitude == 0){
+            //error, set to 0,0
+            latitude = 0;
+            longitude = 0;
+        }
+
 
         dateAndTime = (TextView)findViewById(R.id.dateAndTimeTextView);
         dateAndTime.setText("Party is at " + address + " on " + date + " at " + time);
@@ -108,15 +115,20 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             //add marker to current location
-            startPointMarker = new MarkerOptions().position(start).title("My location");
-            mMap.addMarker(startPointMarker);
+            //startPointMarker = new MarkerOptions().position(start).title("You are here");
+            //mMap.addMarker(startPointMarker);
         }
 
         // Add a marker at current location and move the camera to it
         //LatLng partyLocation = new LatLng(latitude, longitude);
-        LatLng partyLocation = new LatLng(-34, 151);
+
+
+        LatLng partyLocation = new LatLng(latitude, longitude);
         mMap.addMarker(new MarkerOptions().position(partyLocation).title("Movie party"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(partyLocation));
+        //animate camera to start location, 1 is furthest away and 21 is closest
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(partyLocation, 20);
+        mMap.animateCamera(cameraUpdate);
+        
     }
 
     //pull up a list of members
