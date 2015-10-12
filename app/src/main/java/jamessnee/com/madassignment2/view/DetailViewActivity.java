@@ -118,13 +118,15 @@ public class DetailViewActivity extends ActionBarActivity {
 
 
         //Get button from UI
-        Button schedulePartyButton = (Button)findViewById(R.id.partyButton);
+        final Button schedulePartyButton = (Button)findViewById(R.id.partyButton);
         //Set onClickListener
         schedulePartyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 createPartyDialog();
+
+
             }
         });
 
@@ -156,6 +158,12 @@ public class DetailViewActivity extends ActionBarActivity {
 
             }
         });
+
+
+    }
+
+    protected void onResume(){
+        super.onResume();
 
 
     }
@@ -336,30 +344,40 @@ public class DetailViewActivity extends ActionBarActivity {
                     sb.append(date.getYear());
                     String dateOutput = sb.toString();
 
-                    //publish to Firebase
-                    Firebase reference = new Firebase("https://boiling-fire-450.firebaseIO.com/");
-                    reference.child("movieTitle").setValue(titleValue);
-                    reference.child("movieRating").setValue(ratingValue);
-                    reference.child("partyDate").setValue(dateOutput);
-                    reference.child("partyTime").setValue(time);
-                    reference.child("partyVenue").setValue(venue);
-                    reference.child("partyLocation").setValue(location);
-                    reference.child("partyInvitees").setValue(selectedEmails);
+                    //publish to Firebase only if connected
 
+                    if(isConnected()){
 
-                    //intent stuff
-                    //put intent here to go to next activity
-                    Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
-                    //extra to pass in movie variables
-                    Bundle extras = new Bundle();
-                    extras.putSerializable("invitees", selectedEmails);
-                    mapIntent.putExtra("extras", extras);
-                    mapIntent.putExtra("address", venue);
-                    mapIntent.putExtra("latitude", convertedLat);
-                    mapIntent.putExtra("longitude", convertedLong);
-                    mapIntent.putExtra("date", dateOutput);
-                    mapIntent.putExtra("time", time);
-                    startActivity(mapIntent);
+                        Firebase reference = new Firebase("https://boiling-fire-450.firebaseIO.com/");
+                        reference.child("movieTitle").setValue(titleValue);
+                        reference.child("movieRating").setValue(ratingValue);
+                        reference.child("partyDate").setValue(dateOutput);
+                        reference.child("partyTime").setValue(time);
+                        reference.child("partyVenue").setValue(venue);
+                        reference.child("partyLocation").setValue(location);
+                        reference.child("partyInvitees").setValue(selectedEmails);
+
+                        //set is party created to true
+                        AppData.getInstance().setIsPartyCreated(true);
+
+                        //intent stuff
+                        //put intent here to go to next activity
+                        Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
+                        //extra to pass in movie variables
+                        Bundle extras = new Bundle();
+                        extras.putSerializable("invitees", selectedEmails);
+                        mapIntent.putExtra("extras", extras);
+                        mapIntent.putExtra("address", venue);
+                        mapIntent.putExtra("latitude", convertedLat);
+                        mapIntent.putExtra("longitude", convertedLong);
+                        mapIntent.putExtra("date", dateOutput);
+                        mapIntent.putExtra("time", time);
+                        startActivity(mapIntent);
+
+                    }
+                    else {
+                        createErrorDialog("Error", "You are not connected to the internet! You need to be connected in order to create a party.");
+                    }
 
                 }
 

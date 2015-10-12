@@ -16,6 +16,7 @@ public class AppData {
 
     private static AppData instance;
     private List<Movie> movies = new ArrayList<Movie>();
+    public boolean isPartyCreated = false;
 
 
     private AppData(){
@@ -59,5 +60,11 @@ public class AppData {
 
     }
 
+    public boolean isPartyCreated() {
+        return isPartyCreated;
+    }
 
+    public void setIsPartyCreated(boolean isPartyCreated) {
+        this.isPartyCreated = isPartyCreated;
+    }
 }
