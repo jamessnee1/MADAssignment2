@@ -9,18 +9,20 @@ import java.util.GregorianCalendar;
 public class Party {
 
     private GregorianCalendar partyDate;
+    private String dateString;
     private String partyTime;
     private String partyVenue;
     private String partyLocationLatLng;
     private ArrayList<String> partyInvitees;
 
 
-    public Party(GregorianCalendar partyDate, String partyTime, String partyVenue, String partyLocationLatLng, ArrayList<String> partyInvitees) {
+    public Party(GregorianCalendar partyDate, String partyTime, String partyVenue, String partyLocationLatLng, ArrayList<String> partyInvitees, String dateString) {
         this.partyDate = partyDate;
         this.partyTime = partyTime;
         this.partyVenue = partyVenue;
         this.partyLocationLatLng = partyLocationLatLng;
         this.partyInvitees = partyInvitees;
+        this.dateString = dateString;
 
     }
 
@@ -60,4 +62,11 @@ public class Party {
         this.partyInvitees = partyInvitees;
     }
 
+    public String getDateString() {
+        return dateString;
+    }
+
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
+    }
 }

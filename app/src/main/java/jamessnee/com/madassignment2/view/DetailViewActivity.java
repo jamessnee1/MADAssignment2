@@ -191,16 +191,8 @@ public class DetailViewActivity extends ActionBarActivity {
 
                 if(AppData.getInstance().getMovie(position).getParty() != null){
 
-                    //create string from GregorianCalendar
-                    //convert date to string
-                    GregorianCalendar retrievedDate = AppData.getInstance().getMovie(position).getParty().getPartyDate();
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(retrievedDate.DAY_OF_MONTH);
-                    sb.append("/");
-                    sb.append(retrievedDate.MONTH);
-                    sb.append("/");
-                    sb.append(retrievedDate.YEAR);
-                    dateOutput = sb.toString();
+                    //get String representation of date
+                    dateOutput = AppData.getInstance().getMovie(position).getParty().getDateString();
 
                     //intent stuff here
                     //put intent here to go to next activity
@@ -383,8 +375,17 @@ public class DetailViewActivity extends ActionBarActivity {
                 }
                 else {
 
+                    //convert date to string
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(date.getDayOfMonth());
+                    sb.append("/");
+                    sb.append(date.getMonth());
+                    sb.append("/");
+                    sb.append(date.getYear());
+                    dateOutput = sb.toString();
+
                     //create Party object
-                    createdParty = new Party(partyDate, time, venue, location, selectedEmails);
+                    createdParty = new Party(partyDate, time, venue, location, selectedEmails, dateOutput);
                     //set party to corresponding movie
                     AppData.getInstance().getMovie(position).setParty(createdParty);
 
@@ -394,14 +395,6 @@ public class DetailViewActivity extends ActionBarActivity {
                     latitude = Double.parseDouble(convertedLatLng[0]);
                     longitude = Double.parseDouble(convertedLatLng[1]);
 
-                    //convert date to string
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(date.getDayOfMonth());
-                    sb.append("/");
-                    sb.append(date.getMonth());
-                    sb.append("/");
-                    sb.append(date.getYear());
-                    dateOutput = sb.toString();
 
                     //publish to Firebase only if connected
 
