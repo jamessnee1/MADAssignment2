@@ -72,6 +72,15 @@ public class DetailViewActivity extends ActionBarActivity {
     private Movie retrievedMovie;
     private Bitmap posterFromURL;
     private ImageView displayPoster;
+    private Party createdParty;
+
+    //party vars
+    private String dateOutput;
+    private String time;
+    private String venue;
+    private double latitude, longitude;
+    private ArrayList<String> selectedEmails;
+    private Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +174,41 @@ public class DetailViewActivity extends ActionBarActivity {
     protected void onResume(){
         super.onResume();
 
+        Button partyButton = (Button)findViewById(R.id.partyButton);
+
+        //if we have already created the party for that movie, then show party details instead
+        if(AppData.getInstance().getMovie(position).getParty() != null){
+
+            partyButton.setText("View party details");
+
+        }
+
+        partyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(AppData.getInstance().getMovie(position).getParty() != null){
+                    //intent stuff here
+                    //put intent here to go to next activity
+                    Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
+                    //extra to pass in movie variables
+                    extras = new Bundle();
+                    extras.putSerializable("invitees", AppData.getInstance().getMovie(position).getParty().getPartyInvitees());
+                    mapIntent.putExtra("extras", extras);
+                    mapIntent.putExtra("address", AppData.getInstance().getMovie(position).getParty().getPartyVenue());
+                    mapIntent.putExtra("latitude", latitude);
+                    mapIntent.putExtra("longitude", longitude);
+                    mapIntent.putExtra("date", AppData.getInstance().getMovie(position).getParty().getPartyDate());
+                    mapIntent.putExtra("time", AppData.getInstance().getMovie(position).getParty().getPartyTime());
+                    startActivity(mapIntent);
+                }
+                else {
+                    createPartyDialog();
+                }
+
+            }
+        });
+
 
     }
 
@@ -233,7 +277,7 @@ public class DetailViewActivity extends ActionBarActivity {
         Collections.sort(emails);
 
         //new array for saving selected email addresses
-        final ArrayList<String>selectedEmails = new ArrayList<String>();
+        selectedEmails = new ArrayList<String>();
 
         //create listview to display chosen email addresses under spinner
         final ListView emailList = new ListView(this);
@@ -307,11 +351,11 @@ public class DetailViewActivity extends ActionBarActivity {
                 //save data here
                 //create new party and add data to it
                 //send party to Firebase from here
-                String time = partyTime.getText().toString();
+                time = partyTime.getText().toString();
                 GregorianCalendar partyDate = new GregorianCalendar(date.getYear(), date.getMonth(), date.getDayOfMonth());
-                String venue = partyVenue.getText().toString();
+                venue = partyVenue.getText().toString();
                 String location = partyLocation.getText().toString();
-                Party party = new Party(partyDate, time, venue, location, selectedEmails);
+
 
                 //input validation
                 if(TextUtils.isEmpty(time)){
@@ -325,15 +369,16 @@ public class DetailViewActivity extends ActionBarActivity {
                 }
                 else {
 
-
+                    //create Party object
+                    createdParty = new Party(partyDate, time, venue, location, selectedEmails);
                     //set party to corresponding movie
-                    AppData.getInstance().getMovie(position).setParty(party);
+                    AppData.getInstance().getMovie(position).setParty(createdParty);
 
 
                     //send latlngs of where party is to google map intent
                     String[] convertedLatLng = location.split(",");
-                    double convertedLat = Double.parseDouble(convertedLatLng[0]);
-                    double convertedLong = Double.parseDouble(convertedLatLng[1]);
+                    latitude = Double.parseDouble(convertedLatLng[0]);
+                    longitude = Double.parseDouble(convertedLatLng[1]);
 
                     //convert date to string
                     StringBuilder sb = new StringBuilder();
@@ -342,7 +387,7 @@ public class DetailViewActivity extends ActionBarActivity {
                     sb.append(date.getMonth());
                     sb.append("/");
                     sb.append(date.getYear());
-                    String dateOutput = sb.toString();
+                    dateOutput = sb.toString();
 
                     //publish to Firebase only if connected
 
@@ -357,19 +402,17 @@ public class DetailViewActivity extends ActionBarActivity {
                         reference.child("partyLocation").setValue(location);
                         reference.child("partyInvitees").setValue(selectedEmails);
 
-                        //set is party created to true
-                        AppData.getInstance().setIsPartyCreated(true);
 
                         //intent stuff
                         //put intent here to go to next activity
                         Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
                         //extra to pass in movie variables
-                        Bundle extras = new Bundle();
+                        extras = new Bundle();
                         extras.putSerializable("invitees", selectedEmails);
                         mapIntent.putExtra("extras", extras);
                         mapIntent.putExtra("address", venue);
-                        mapIntent.putExtra("latitude", convertedLat);
-                        mapIntent.putExtra("longitude", convertedLong);
+                        mapIntent.putExtra("latitude", latitude);
+                        mapIntent.putExtra("longitude", longitude);
                         mapIntent.putExtra("date", dateOutput);
                         mapIntent.putExtra("time", time);
                         startActivity(mapIntent);
