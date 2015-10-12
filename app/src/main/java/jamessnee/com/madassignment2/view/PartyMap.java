@@ -82,13 +82,6 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
         latitude = intent.getDoubleExtra("latitude", 0);
         longitude = intent.getDoubleExtra("longitude", 0);
 
-        //check lat and long is not null
-        if (latitude == 0 || longitude == 0){
-            //error, set to 0,0
-            latitude = 0;
-            longitude = 0;
-        }
-
 
         dateAndTime = (TextView)findViewById(R.id.dateAndTimeTextView);
         dateAndTime.setText("Party is at " + address + " on " + date + " at " + time);
@@ -128,7 +121,7 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
         //animate camera to start location, 1 is furthest away and 21 is closest
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(partyLocation, 20);
         mMap.animateCamera(cameraUpdate);
-        
+
     }
 
     //pull up a list of members

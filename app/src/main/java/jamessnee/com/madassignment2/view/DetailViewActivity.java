@@ -16,6 +16,7 @@ import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -209,7 +210,7 @@ public class DetailViewActivity extends ActionBarActivity {
 
         //party location
         final TextView partyLocationTitle = new TextView(this);
-        partyLocationTitle.setText("Enter party location:");
+        partyLocationTitle.setText("Enter party location (Latitude and longitude separated by a comma):");
         final EditText partyLocation = new EditText(this);
 
         //add contacts
@@ -304,48 +305,63 @@ public class DetailViewActivity extends ActionBarActivity {
                 String location = partyLocation.getText().toString();
                 Party party = new Party(partyDate, time, venue, location, selectedEmails);
 
-                //set party to corresponding movie
-                AppData.getInstance().getMovie(position).setParty(party);
-
-                //firebase stuff here
-
-                //send latlngs of where party is to google map intent
-                String[] convertedLatLng = location.split(",");
-                double convertedLat = Double.parseDouble(convertedLatLng[0]);
-                double convertedLong = Double.parseDouble(convertedLatLng[1]);
-
-                //convert date to string
-                StringBuilder sb = new StringBuilder();
-                sb.append(date.getDayOfMonth());
-                sb.append("/");
-                sb.append(date.getMonth());
-                sb.append("/");
-                sb.append(date.getYear());
-                String dateOutput = sb.toString();
-
-                Firebase reference = new Firebase("https://boiling-fire-450.firebaseIO.com/");
-                reference.child("movieTitle").setValue(titleValue);
-                reference.child("movieRating").setValue(ratingValue);
-                reference.child("partyDate").setValue(dateOutput);
-                reference.child("partyTime").setValue(time);
-                reference.child("partyVenue").setValue(venue);
-                reference.child("partyLocation").setValue(location);
-                reference.child("partyInvitees").setValue(selectedEmails);
+                //input validation
+                if(TextUtils.isEmpty(time)){
+                    createErrorDialog("Error", "You must enter a time!");
+                }
+                else if (venue.isEmpty()){
+                    createErrorDialog("Error", "You must enter a venue!");
+                }
+                else if (location.isEmpty()){
+                    createErrorDialog("Error", "You must enter a location! Latitude and longitude separated by a comma.");
+                }
+                else {
 
 
-                //intent stuff
-                //put intent here to go to next activity
-                Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
-                //extra to pass in movie variables
-                Bundle extras = new Bundle();
-                extras.putSerializable("invitees", selectedEmails);
-                mapIntent.putExtra("extras", extras);
-                mapIntent.putExtra("address", venue);
-                mapIntent.putExtra("latitude", convertedLat);
-                mapIntent.putExtra("longitude", convertedLong);
-                mapIntent.putExtra("date", dateOutput);
-                mapIntent.putExtra("time", time);
-                startActivity(mapIntent);
+                    //set party to corresponding movie
+                    AppData.getInstance().getMovie(position).setParty(party);
+
+
+                    //send latlngs of where party is to google map intent
+                    String[] convertedLatLng = location.split(",");
+                    double convertedLat = Double.parseDouble(convertedLatLng[0]);
+                    double convertedLong = Double.parseDouble(convertedLatLng[1]);
+
+                    //convert date to string
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(date.getDayOfMonth());
+                    sb.append("/");
+                    sb.append(date.getMonth());
+                    sb.append("/");
+                    sb.append(date.getYear());
+                    String dateOutput = sb.toString();
+
+                    //publish to Firebase
+                    Firebase reference = new Firebase("https://boiling-fire-450.firebaseIO.com/");
+                    reference.child("movieTitle").setValue(titleValue);
+                    reference.child("movieRating").setValue(ratingValue);
+                    reference.child("partyDate").setValue(dateOutput);
+                    reference.child("partyTime").setValue(time);
+                    reference.child("partyVenue").setValue(venue);
+                    reference.child("partyLocation").setValue(location);
+                    reference.child("partyInvitees").setValue(selectedEmails);
+
+
+                    //intent stuff
+                    //put intent here to go to next activity
+                    Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
+                    //extra to pass in movie variables
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("invitees", selectedEmails);
+                    mapIntent.putExtra("extras", extras);
+                    mapIntent.putExtra("address", venue);
+                    mapIntent.putExtra("latitude", convertedLat);
+                    mapIntent.putExtra("longitude", convertedLong);
+                    mapIntent.putExtra("date", dateOutput);
+                    mapIntent.putExtra("time", time);
+                    startActivity(mapIntent);
+
+                }
 
 
             }
