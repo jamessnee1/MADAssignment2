@@ -161,6 +161,8 @@ public class DetailViewActivity extends ActionBarActivity {
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
 
                 ratingBar.setRating((int) rating);
+                //Change rating in ratingValue to ensure it goes to Firebase correctly
+                ratingValue = (int)rating;
                 AppData.getInstance().getMovie(position).setRating((int) rating);
                 Toast.makeText(getApplicationContext(), "The rating was changed to " +
                         AppData.getInstance().getMovie(position).getRating(), Toast.LENGTH_SHORT).show();
@@ -188,6 +190,18 @@ public class DetailViewActivity extends ActionBarActivity {
             public void onClick(View v) {
 
                 if(AppData.getInstance().getMovie(position).getParty() != null){
+
+                    //create string from GregorianCalendar
+                    //convert date to string
+                    GregorianCalendar retrievedDate = AppData.getInstance().getMovie(position).getParty().getPartyDate();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(retrievedDate.DAY_OF_MONTH);
+                    sb.append("/");
+                    sb.append(retrievedDate.MONTH);
+                    sb.append("/");
+                    sb.append(retrievedDate.YEAR);
+                    dateOutput = sb.toString();
+
                     //intent stuff here
                     //put intent here to go to next activity
                     Intent mapIntent = new Intent(DetailViewActivity.this, PartyMap.class);
@@ -198,7 +212,7 @@ public class DetailViewActivity extends ActionBarActivity {
                     mapIntent.putExtra("address", AppData.getInstance().getMovie(position).getParty().getPartyVenue());
                     mapIntent.putExtra("latitude", latitude);
                     mapIntent.putExtra("longitude", longitude);
-                    mapIntent.putExtra("date", AppData.getInstance().getMovie(position).getParty().getPartyDate());
+                    mapIntent.putExtra("date", dateOutput);
                     mapIntent.putExtra("time", AppData.getInstance().getMovie(position).getParty().getPartyTime());
                     startActivity(mapIntent);
                 }

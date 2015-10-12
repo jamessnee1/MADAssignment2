@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -124,6 +125,23 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
+    //map buttons
+    public void normalMapButtonPressed(View view) {
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+    }
+
+    public void satelliteMapButtonPressed(View view) {
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+    }
+
+    public void hybridMapButtonPressed(View view) {
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+    }
+
     //pull up a list of members
     public void membersButtonPressed(View view) {
 
@@ -156,6 +174,12 @@ public class PartyMap extends FragmentActivity implements OnMapReadyCallback {
         builder.show();
 
 
+    }
+
+    //order food
+    public void orderFoodButtonPressed(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.menulog.com.au"));
+        startActivity(browserIntent);
     }
 
     //Location Listener
