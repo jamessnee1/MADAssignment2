@@ -563,6 +563,10 @@ public class DetailViewActivity extends ActionBarActivity {
                 //get poster from URL
                 new LoadImage().execute(imageUrl);
 
+                //add clicked movie to database
+                DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(retrievedMovie);
+                
+
             }
             else {
                 createErrorDialog("Error", "Movie not found!");

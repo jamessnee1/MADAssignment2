@@ -363,9 +363,6 @@ public class MainActivity extends ActionBarActivity {
                     detailIntent.putExtra("position", position);
                     startActivity(detailIntent);
 
-                    //add clicked movie to database
-                    DatabaseHandler.getInstance(getApplicationContext()).insertMovieData(clickedMovie);
-                    copyDatabase();
 
                 }
             });
