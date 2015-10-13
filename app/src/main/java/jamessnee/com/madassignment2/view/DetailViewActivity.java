@@ -622,7 +622,7 @@ public class DetailViewActivity extends ActionBarActivity {
                     imageUrl = json.optString("Poster").toString();
 
                     //add to new movie object
-                    Movie retrievedMovie = new Movie(title, year, null, plot, 0, id, 0, null);
+                    Movie retrievedMovie = new Movie(title, year, null, plot, imageUrl, id, 0, null);
 
                 return retrievedMovie;
 

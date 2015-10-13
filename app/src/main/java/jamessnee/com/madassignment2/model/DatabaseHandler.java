@@ -47,7 +47,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table " + TABLE_NAME + " (ID TEXT PRIMARY KEY, TITLE TEXT, YEAR INTEGER, SHORT_PLOT TEXT, FULL_PLOT TEXT, POSTER INTEGER, RATING INTEGER)");
+        db.execSQL("create table " + TABLE_NAME + " (ID TEXT PRIMARY KEY, TITLE TEXT, YEAR INTEGER, SHORT_PLOT TEXT, FULL_PLOT TEXT, POSTER TEXT, RATING INTEGER)");
 
     }
 

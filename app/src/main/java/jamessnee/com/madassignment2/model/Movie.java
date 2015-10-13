@@ -9,13 +9,13 @@ public class Movie {
     private int year;
     private String short_plot;
     private String full_plot;
-    private int poster;
+    private String poster;
     private String id;
     private int rating;
     private Party party;
 
 
-    public Movie(String title, int year, String short_plot, String full_plot, int poster, String id, int rating, Party party) {
+    public Movie(String title, int year, String short_plot, String full_plot, String poster, String id, int rating, Party party) {
 
         super();
 
@@ -46,7 +46,7 @@ public class Movie {
         return full_plot;
     }
 
-    public int getPoster(){
+    public String getPoster(){
         return poster;
     }
 
